@@ -63,8 +63,20 @@ namespace BusterWood
 
         public static IWriter MultiWriter(params IWriter[] writers) => new MultiWriter(writers);
 
+        /// <summary>
+        /// TeeReader returns a Reader that writes to <paramref name="dst"/> what it reads from <paramref name="src"/>. 
+        /// All reads from r performed through it are matched with corresponding writes to w.
+        /// There is no internal buffering - the write must complete before the read completes.
+        /// </summary>
+        /// <remarks>Any error encountered while writing is reported as a read error.</remarks>
+        public static IReader Tee(IReader src, IWriter dst) => new TeeReader(src, dst);
+
+        /// <summary>Copy copies from src to <paramref name="dst"/> until either EOF is reached on <paramref name="src"/> or an error occurs. </summary>
+        /// <returns>the number of bytes copied and the first error encountered while copying, if any</returns>
         public static IOLongResult Copy(IWriter dst, IReader src) => CopyBuffer(dst, src, null);
 
+        /// <summary>Copy copies from src to <paramref name="dst"/> until either EOF is reached on <paramref name="src"/> or an error occurs. </summary>
+        /// <returns>the number of bytes copied and the first error encountered while copying, if any</returns>
         public static Task<IOLongResult> CopyAsync(IWriter dst, IReader src) => CopyBufferAsync(dst, src, null);
 
         public static IOLongResult CopyBuffer(IWriter dst, IReader src, Slice<byte> buf)
