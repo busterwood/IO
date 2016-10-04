@@ -1,8 +1,7 @@
 ﻿using System.Threading.Tasks;
 
-namespace BusterWood.IO
+namespace BusterWood
 {
-
     class MultiReader : IReader
     {
         Slice<IReader> readers;
@@ -12,11 +11,11 @@ namespace BusterWood.IO
             this.readers = readers;
         }
 
-        public Result Read(Slice<byte> dest)
+        public IOResult Read(Slice<byte> dest)
         {
-            while (readers.Count > 0)
+            while (readers.Length > 0)
             {
-                if (readers.Count == 1)
+                if (readers.Length == 1)
                 {
                     // try to flatten nested multi readers
                     var r = readers[0] as MultiReader;
@@ -28,25 +27,25 @@ namespace BusterWood.IO
                 }
 
                 var result = readers[0].Read(dest);
-                if (result.Bytes > 0 || result.Error != Reader.EOF)
+                if (result.Bytes > 0 || result.Error != IO.EOF)
                 {
-                    if (result.Error == Reader.EOF)
+                    if (result.Error == IO.EOF)
                     {
                         // dont return EOF yet, there may be more bytes in the remaining readers
-                        return new Result(result.Bytes, null);
+                        return new IOResult(result.Bytes, null);
                     }
                     return result;
                 }
                 readers = readers.SubSlice(1);
             }
-            return new Result(0, Reader.EOF);
+            return new IOResult(0, IO.EOF);
         }
 
-        public async Task<Result> ReadAsync(Slice<byte> dest)
+        public async Task<IOResult> ReadAsync(Slice<byte> dest)
         {
-            while (readers.Count > 0)
+            while (readers.Length > 0)
             {
-                if (readers.Count == 1)
+                if (readers.Length == 1)
                 {
                     // try to flatten nested multi readers
                     var r = readers[0] as MultiReader;
@@ -58,18 +57,18 @@ namespace BusterWood.IO
                 }
 
                 var result = await readers[0].ReadAsync(dest);
-                if (result.Bytes > 0 || result.Error != Reader.EOF)
+                if (result.Bytes > 0 || result.Error != IO.EOF)
                 {
-                    if (result.Error == Reader.EOF)
+                    if (result.Error == IO.EOF)
                     {
                         // dont return EOF yet, there may be more bytes in the remaining readers
-                        return new Result(result.Bytes, null);
+                        return new IOResult(result.Bytes, null);
                     }
                     return result;
                 }
                 readers = readers.SubSlice(1);
             }
-            return new Result(0, Reader.EOF);
+            return new IOResult(0, IO.EOF);
         }
     }
 }

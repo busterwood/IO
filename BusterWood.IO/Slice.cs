@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace BusterWood.IO
+namespace BusterWood
 {
     /// <summary>The whole or a part of an <see cref="Array"/></summary>
     public struct Slice<T> : IReadOnlyList<T>
@@ -34,7 +34,9 @@ namespace BusterWood.IO
 
         public int Offset => _start;
 
-        public int Count => _end - _start;
+        public int Length => _end - _start;
+
+        int IReadOnlyCollection<T>.Count => _end - _start;
 
         public T this[int index]
         {

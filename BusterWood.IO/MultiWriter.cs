@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace BusterWood.IO
+namespace BusterWood
 {
     class MultiWriter : IWriter
     {
@@ -13,30 +13,30 @@ namespace BusterWood.IO
             this.writers = writers;
         }
 
-        public Result Write(Slice<byte> src)
+        public IOResult Write(Slice<byte> src)
         {
             foreach (var w in writers)
             {
                 var res = w.Write(src);
-                if (res.Bytes != src.Count)
+                if (res.Bytes != src.Length)
                 {
-                    return new Result(0, Writer.ShortWrite);
+                    return new IOResult(0, IO.ShortWrite);
                 }
             }
-            return new Result(src.Count, null);
+            return new IOResult(src.Length, null);
         }
 
-        public async Task<Result> WriteAsync(Slice<byte> src)
+        public async Task<IOResult> WriteAsync(Slice<byte> src)
         {
             foreach (var w in writers)
             {
                 var res = await w.WriteAsync(src);
-                if (res.Bytes != src.Count)
+                if (res.Bytes != src.Length)
                 {
-                    return new Result(0, Writer.ShortWrite);
+                    return new IOResult(0, IO.ShortWrite);
                 }
             }
-            return new Result(src.Count, null);
+            return new IOResult(src.Length, null);
         }
     }
 }

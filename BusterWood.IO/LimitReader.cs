@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace BusterWood.IO
+namespace BusterWood
 {
     class LimitReader : IReader
     {
@@ -16,22 +16,22 @@ namespace BusterWood.IO
             bytesRemaining = limit;
         }
 
-        public Result Read(Slice<byte> dest)
+        public IOResult Read(Slice<byte> dest)
         {
             if (bytesRemaining <= 0)
-                return new Result(0, Reader.EOF);
-            if (dest.Count > bytesRemaining)
+                return new IOResult(0, IO.EOF);
+            if (dest.Length > bytesRemaining)
                 dest = dest.SubSlice(0, (int)bytesRemaining);
             var res = reader.Read(dest);
             bytesRemaining -= res.Bytes;
             return res;
         }
 
-        public async Task<Result> ReadAsync(Slice<byte> dest)
+        public async Task<IOResult> ReadAsync(Slice<byte> dest)
         {
             if (bytesRemaining <= 0)
-                return new Result(0, Reader.EOF);
-            if (dest.Count > bytesRemaining)
+                return new IOResult(0, IO.EOF);
+            if (dest.Length > bytesRemaining)
                 dest = dest.SubSlice(0, (int)bytesRemaining);
             var res = await reader.ReadAsync(dest);
             bytesRemaining -= res.Bytes;

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace BusterWood.IO
+namespace BusterWood
 {
     class StreamReaderWrapper : IReader
     {
@@ -14,37 +14,37 @@ namespace BusterWood.IO
             this.stream = stream;
         }
 
-        public Result Read(Slice<byte> dest)
+        public IOResult Read(Slice<byte> dest)
         {
             try
             {
-                int bytes = stream.Read(dest.Array, dest.Offset, dest.Count);
-                return new Result(bytes, bytes == 0 ? Reader.EOF : null);
+                int bytes = stream.Read(dest.Array, dest.Offset, dest.Length);
+                return new IOResult(bytes, bytes == 0 ? IO.EOF : null);
             }
             catch (IOException ex)
             {
-                return new Result(0, ex);
+                return new IOResult(0, ex);
             }
             catch (ObjectDisposedException ex)
             {
-                return new Result(0, ex);
+                return new IOResult(0, ex);
             }
         }
 
-        public async Task<Result> ReadAsync(Slice<byte> dest)
+        public async Task<IOResult> ReadAsync(Slice<byte> dest)
         {
             try
             {
-                int bytes = await stream.ReadAsync(dest.Array, dest.Offset, dest.Count);
-                return new Result(bytes, bytes == 0 ? Reader.EOF : null);
+                int bytes = await stream.ReadAsync(dest.Array, dest.Offset, dest.Length);
+                return new IOResult(bytes, bytes == 0 ? IO.EOF : null);
             }
             catch (IOException ex)
             {
-                return new Result(0, ex);
+                return new IOResult(0, ex);
             }
             catch (ObjectDisposedException ex)
             {
-                return new Result(0, ex);
+                return new IOResult(0, ex);
             }
         }
     }
