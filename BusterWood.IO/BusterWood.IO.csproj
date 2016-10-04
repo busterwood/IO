@@ -7,8 +7,8 @@
     <ProjectGuid>{AB7A86C3-B1FE-4C2D-9649-F876631DD0BE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BusterWood.IO</RootNamespace>
-    <AssemblyName>BusterWood.IO</AssemblyName>
+    <RootNamespace>BusterWood.InputOutput</RootNamespace>
+    <AssemblyName>BusterWood.InputOutput</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -34,10 +34,14 @@
     <Compile Include="LimitReader.cs" />
     <Compile Include="MultiReader.cs" />
     <Compile Include="MultiWriter.cs" />
+    <Compile Include="Pipe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Slice.cs" />
     <Compile Include="StreamReaderWrapper.cs" />
     <Compile Include="TeeReader.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

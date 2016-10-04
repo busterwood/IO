@@ -2,27 +2,27 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace BusterWood
+namespace BusterWood.InputOutput
 {
     public interface IReader
     {
-        /// <summary>Read up of <see cref="Slice{}.Length"/> bytes into <paramref name="dest"/> from the underlying data stream</summary>
-        /// <param name="dest">Where the read data is written too</param>
+        /// <summary>Read up of <see cref="Slice{}.Length"/> bytes into <paramref name="buf"/> from the underlying data stream</summary>
+        /// <param name="buf">Where the read data is written too</param>
         /// <returns>the number of <see cref="IOResult.Bytes"/> read and any error that caused read to stop early</returns>
-        IOResult Read(Slice<byte> dest);
+        IOResult Read(Slice<byte> buf);
 
-        Task<IOResult> ReadAsync(Slice<byte> dest);
+        Task<IOResult> ReadAsync(Slice<byte> buf);
     }
 
     public interface IWriter
     {
-        /// <summary>Writes the whole of <paramref name="src"/> to the underlying data stream</summary>
-        /// <param name="src"></param>
+        /// <summary>Writes the whole of <paramref name="buf"/> to the underlying data stream</summary>
+        /// <param name="buf"></param>
         /// <returns>the number of <see cref="IOResult.Bytes"/> written and any error that caused write to stop early</returns>
-        /// <remarks>Implementation must not modify the contents of <paramref name="src"/></remarks>
-        IOResult Write(Slice<byte> src);
+        /// <remarks>Implementation must not modify the contents of <paramref name="buf"/></remarks>
+        IOResult Write(Slice<byte> buf);
 
-        Task<IOResult> WriteAsync(Slice<byte> src);
+        Task<IOResult> WriteAsync(Slice<byte> buf);
     }
 
     /// <summary>The result of a <see cref="IReader.Read(Slice{byte})"/> or <see cref="IWriter.Write(Slice{byte})"/></summary>
@@ -64,27 +64,27 @@ namespace BusterWood
         public static IWriter MultiWriter(params IWriter[] writers) => new MultiWriter(writers);
 
         /// <summary>
-        /// TeeReader returns a Reader that writes to <paramref name="dst"/> what it reads from <paramref name="src"/>. 
+        /// TeeReader returns a Reader that writes to <paramref name="to"/> what it reads from <paramref name="from"/>. 
         /// All reads from r performed through it are matched with corresponding writes to w.
         /// There is no internal buffering - the write must complete before the read completes.
         /// </summary>
         /// <remarks>Any error encountered while writing is reported as a read error.</remarks>
-        public static IReader Tee(IReader src, IWriter dst) => new TeeReader(src, dst);
+        public static IReader Tee(IReader from, IWriter to) => new TeeReader(from, to);
 
-        /// <summary>Copy copies from src to <paramref name="dst"/> until either EOF is reached on <paramref name="src"/> or an error occurs. </summary>
+        /// <summary>Copy copies from src to <paramref name="to"/> until either EOF is reached on <paramref name="from"/> or an error occurs. </summary>
         /// <returns>the number of bytes copied and the first error encountered while copying, if any</returns>
-        public static IOLongResult Copy(IWriter dst, IReader src) => CopyBuffer(dst, src, null);
+        public static IOLongResult Copy(IReader from, IWriter to) => CopyBuffer(from, to, null);
 
-        /// <summary>Copy copies from src to <paramref name="dst"/> until either EOF is reached on <paramref name="src"/> or an error occurs. </summary>
+        /// <summary>Copy copies from src to <paramref name="to"/> until either EOF is reached on <paramref name="from"/> or an error occurs. </summary>
         /// <returns>the number of bytes copied and the first error encountered while copying, if any</returns>
-        public static Task<IOLongResult> CopyAsync(IWriter dst, IReader src) => CopyBufferAsync(dst, src, null);
+        public static Task<IOLongResult> CopyAsync(IReader from, IWriter to) => CopyBufferAsync(from, to, null);
 
-        public static IOLongResult CopyBuffer(IWriter dst, IReader src, Slice<byte> buf)
+        public static IOLongResult CopyBuffer(IReader from, IWriter to, Slice<byte> buf)
         {
-            if (src == null)
-                throw new ArgumentNullException(nameof(src));
-            if (dst == null)
-                throw new ArgumentNullException(nameof(dst));
+            if (from == null)
+                throw new ArgumentNullException(nameof(from));
+            if (to == null)
+                throw new ArgumentNullException(nameof(to));
             if (buf.Length == 0)
                 throw new ArgumentException("buffer must be 1 or more bytes", nameof(buf));
 
@@ -94,10 +94,10 @@ namespace BusterWood
             long written = 0;
             for (;;)
             {
-                var rr = src.Read(buf);
+                var rr = from.Read(buf);
                 if (rr.Bytes > 0)
                 {
-                    var wr = dst.Write(buf.SubSlice(0, rr.Bytes));
+                    var wr = to.Write(buf.SubSlice(0, rr.Bytes));
                     if (wr.Bytes > 0)
                         written += wr.Bytes;
                     if (wr.Error != null)
@@ -112,12 +112,12 @@ namespace BusterWood
             }
         }
 
-        public static async Task<IOLongResult> CopyBufferAsync(IWriter dst, IReader src, Slice<byte> buf)
+        public static async Task<IOLongResult> CopyBufferAsync(IReader from, IWriter to, Slice<byte> buf)
         {
-            if (src == null)
-                throw new ArgumentNullException(nameof(src));
-            if (dst == null)
-                throw new ArgumentNullException(nameof(dst));
+            if (from == null)
+                throw new ArgumentNullException(nameof(from));
+            if (to == null)
+                throw new ArgumentNullException(nameof(to));
             if (buf.Length == 0)
                 throw new ArgumentException("buffer must be 1 or more bytes", nameof(buf));
 
@@ -127,10 +127,10 @@ namespace BusterWood
             long written = 0;
             for (;;)
             {
-                var rr = await src.ReadAsync(buf);
+                var rr = await from.ReadAsync(buf);
                 if (rr.Bytes > 0)
                 {
-                    var wr = await dst.WriteAsync(buf.SubSlice(0, rr.Bytes));
+                    var wr = await to.WriteAsync(buf.SubSlice(0, rr.Bytes));
                     if (wr.Bytes > 0)
                         written += wr.Bytes;
                     if (wr.Error != null)
@@ -145,9 +145,9 @@ namespace BusterWood
             }
         }
 
-        public static IOLongResult CopyN(IWriter dst, IReader src, long bytes)
+        public static IOLongResult CopyN(IReader from, IWriter to, long bytes)
         {
-            var res = Copy(dst, LimitReader(src, bytes));
+            var res = Copy(LimitReader(from, bytes), to);
             if (res.Bytes == bytes)
                 return new IOLongResult(res.Bytes, null);
             if (res.Bytes < bytes && res.Error == null)
@@ -155,9 +155,9 @@ namespace BusterWood
             return res;
         }
 
-        public static async Task<IOLongResult> CopyNAsync(IWriter dst, IReader src, long bytes)
+        public static async Task<IOLongResult> CopyNAsync(IReader from, IWriter to, long bytes)
         {
-            var res = await CopyAsync(dst, LimitReader(src, bytes));
+            var res = await CopyAsync(LimitReader(from, bytes), to);
             if (res.Bytes == bytes)
                 return new IOLongResult(res.Bytes, null);
             if (res.Bytes < bytes && res.Error == null)

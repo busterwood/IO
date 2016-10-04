@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace BusterWood
+namespace BusterWood.InputOutput
 {
     /// <summary>The whole or a part of an <see cref="Array"/></summary>
     public struct Slice<T> : IReadOnlyList<T>
@@ -47,6 +47,14 @@ namespace BusterWood
                 if (index < 0 || i >= _end) throw new ArgumentOutOfRangeException(nameof(index));
                 return _array[i];
             }
+        }
+
+        public int CopyTo(Slice<byte> buf)
+        {
+            int bytes = buf.Length < Length ? buf.Length : Length;
+            if (bytes > 0)
+                System.Array.Copy(_array, _start, buf._array, buf._start, bytes);
+            return bytes;
         }
 
         public override int GetHashCode() => null == _array ? 0 : _array.GetHashCode() ^ _start ^ _end;

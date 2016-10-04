@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace BusterWood
+namespace BusterWood.InputOutput
 {
     class LimitReader : IReader
     {
