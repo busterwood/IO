@@ -13,7 +13,7 @@ namespace BusterWood.InputOutput
             this.writers = writers;
         }
 
-        public IOResult Write(Slice<byte> src)
+        public IOResult Write(Block<byte> src)
         {
             foreach (var w in writers)
             {
@@ -26,7 +26,7 @@ namespace BusterWood.InputOutput
             return new IOResult(src.Length, null);
         }
 
-        public async Task<IOResult> WriteAsync(Slice<byte> src)
+        public async Task<IOResult> WriteAsync(Block<byte> src)
         {
             foreach (var w in writers)
             {

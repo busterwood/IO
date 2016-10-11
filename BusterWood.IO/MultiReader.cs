@@ -4,14 +4,14 @@ namespace BusterWood.InputOutput
 {
     class MultiReader : IReader
     {
-        Slice<IReader> readers;
+        Block<IReader> readers;
 
-        public MultiReader(Slice<IReader> readers)
+        public MultiReader(Block<IReader> readers)
         {
             this.readers = readers;
         }
 
-        public IOResult Read(Slice<byte> dest)
+        public IOResult Read(Block<byte> dest)
         {
             while (readers.Length > 0)
             {
@@ -36,12 +36,12 @@ namespace BusterWood.InputOutput
                     }
                     return result;
                 }
-                readers = readers.SubSlice(1);
+                readers = readers.Slice(1);
             }
             return new IOResult(0, IO.EOF);
         }
 
-        public async Task<IOResult> ReadAsync(Slice<byte> dest)
+        public async Task<IOResult> ReadAsync(Block<byte> dest)
         {
             while (readers.Length > 0)
             {
@@ -66,7 +66,7 @@ namespace BusterWood.InputOutput
                     }
                     return result;
                 }
-                readers = readers.SubSlice(1);
+                readers = readers.Slice(1);
             }
             return new IOResult(0, IO.EOF);
         }

@@ -16,23 +16,23 @@ namespace BusterWood.InputOutput
             bytesRemaining = limit;
         }
 
-        public IOResult Read(Slice<byte> dest)
+        public IOResult Read(Block<byte> dest)
         {
             if (bytesRemaining <= 0)
                 return new IOResult(0, IO.EOF);
             if (dest.Length > bytesRemaining)
-                dest = dest.SubSlice(0, (int)bytesRemaining);
+                dest = dest.Slice(0, (int)bytesRemaining);
             var res = reader.Read(dest);
             bytesRemaining -= res.Bytes;
             return res;
         }
 
-        public async Task<IOResult> ReadAsync(Slice<byte> dest)
+        public async Task<IOResult> ReadAsync(Block<byte> dest)
         {
             if (bytesRemaining <= 0)
                 return new IOResult(0, IO.EOF);
             if (dest.Length > bytesRemaining)
-                dest = dest.SubSlice(0, (int)bytesRemaining);
+                dest = dest.Slice(0, (int)bytesRemaining);
             var res = await reader.ReadAsync(dest);
             bytesRemaining -= res.Bytes;
             return res;

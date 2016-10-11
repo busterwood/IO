@@ -14,7 +14,7 @@ namespace BusterWood.InputOutput
             this.stream = stream;
         }
 
-        public IOResult Read(Slice<byte> dest)
+        public IOResult Read(Block<byte> dest)
         {
             try
             {
@@ -31,7 +31,7 @@ namespace BusterWood.InputOutput
             }
         }
 
-        public async Task<IOResult> ReadAsync(Slice<byte> dest)
+        public async Task<IOResult> ReadAsync(Block<byte> dest)
         {
             try
             {

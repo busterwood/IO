@@ -6,12 +6,12 @@ namespace BusterWood.InputOutput
 {
     public interface IReader
     {
-        /// <summary>Read up of <see cref="Slice{}.Length"/> bytes into <paramref name="buf"/> from the underlying data stream</summary>
+        /// <summary>Read up of <see cref="Block{}.Length"/> bytes into <paramref name="buf"/> from the underlying data stream</summary>
         /// <param name="buf">Where the read data is written too</param>
         /// <returns>the number of <see cref="IOResult.Bytes"/> read and any error that caused read to stop early</returns>
-        IOResult Read(Slice<byte> buf);
+        IOResult Read(Block<byte> buf);
 
-        Task<IOResult> ReadAsync(Slice<byte> buf);
+        Task<IOResult> ReadAsync(Block<byte> buf);
     }
 
     public interface IWriter
@@ -20,12 +20,12 @@ namespace BusterWood.InputOutput
         /// <param name="buf"></param>
         /// <returns>the number of <see cref="IOResult.Bytes"/> written and any error that caused write to stop early</returns>
         /// <remarks>Implementation must not modify the contents of <paramref name="buf"/></remarks>
-        IOResult Write(Slice<byte> buf);
+        IOResult Write(Block<byte> buf);
 
-        Task<IOResult> WriteAsync(Slice<byte> buf);
+        Task<IOResult> WriteAsync(Block<byte> buf);
     }
 
-    /// <summary>The result of a <see cref="IReader.Read(Slice{byte})"/> or <see cref="IWriter.Write(Slice{byte})"/></summary>
+    /// <summary>The result of a <see cref="IReader.Read(Block{byte})"/> or <see cref="IWriter.Write(Block{byte})"/></summary>
     public struct IOResult
     {
         public readonly int Bytes;
@@ -52,8 +52,8 @@ namespace BusterWood.InputOutput
 
     public static class IO
     {
-        internal static readonly EndOfStreamException EOF = new EndOfStreamException();
-        internal static readonly IOException ShortWrite = new IOException("Short write error");
+        public static readonly EndOfStreamException EOF = new EndOfStreamException();
+        public static readonly IOException ShortWrite = new IOException("Short write error");
 
         public static IReader ReaderFromStream(Stream stream) => new StreamReaderWrapper(stream);
 
@@ -73,22 +73,20 @@ namespace BusterWood.InputOutput
 
         /// <summary>Copy copies from src to <paramref name="to"/> until either EOF is reached on <paramref name="from"/> or an error occurs. </summary>
         /// <returns>the number of bytes copied and the first error encountered while copying, if any</returns>
-        public static IOLongResult Copy(IReader from, IWriter to) => CopyBuffer(from, to, null);
+        public static IOLongResult Copy(IReader from, IWriter to) => CopyBuffer(from, to, default(Block<byte>));
 
         /// <summary>Copy copies from src to <paramref name="to"/> until either EOF is reached on <paramref name="from"/> or an error occurs. </summary>
         /// <returns>the number of bytes copied and the first error encountered while copying, if any</returns>
-        public static Task<IOLongResult> CopyAsync(IReader from, IWriter to) => CopyBufferAsync(from, to, null);
+        public static Task<IOLongResult> CopyAsync(IReader from, IWriter to) => CopyBufferAsync(from, to, default(Block<byte>));
 
-        public static IOLongResult CopyBuffer(IReader from, IWriter to, Slice<byte> buf)
+        public static IOLongResult CopyBuffer(IReader from, IWriter to, Block<byte> buf)
         {
             if (from == null)
                 throw new ArgumentNullException(nameof(from));
             if (to == null)
                 throw new ArgumentNullException(nameof(to));
-            if (buf.Length == 0)
-                throw new ArgumentException("buffer must be 1 or more bytes", nameof(buf));
 
-            if (buf == null)
+            if (buf.Length == 0)
                 buf = new byte[32 * 1024];
 
             long written = 0;
@@ -97,7 +95,7 @@ namespace BusterWood.InputOutput
                 var rr = from.Read(buf);
                 if (rr.Bytes > 0)
                 {
-                    var wr = to.Write(buf.SubSlice(0, rr.Bytes));
+                    var wr = to.Write(buf.Slice(0, rr.Bytes));
                     if (wr.Bytes > 0)
                         written += wr.Bytes;
                     if (wr.Error != null)
@@ -112,7 +110,7 @@ namespace BusterWood.InputOutput
             }
         }
 
-        public static async Task<IOLongResult> CopyBufferAsync(IReader from, IWriter to, Slice<byte> buf)
+        public static async Task<IOLongResult> CopyBufferAsync(IReader from, IWriter to, Block<byte> buf)
         {
             if (from == null)
                 throw new ArgumentNullException(nameof(from));
@@ -130,7 +128,7 @@ namespace BusterWood.InputOutput
                 var rr = await from.ReadAsync(buf);
                 if (rr.Bytes > 0)
                 {
-                    var wr = await to.WriteAsync(buf.SubSlice(0, rr.Bytes));
+                    var wr = await to.WriteAsync(buf.Slice(0, rr.Bytes));
                     if (wr.Bytes > 0)
                         written += wr.Bytes;
                     if (wr.Error != null)

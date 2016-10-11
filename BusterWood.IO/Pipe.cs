@@ -12,11 +12,11 @@ namespace BusterWood.InputOutput
         readonly object readerLock = new object(); // only one reader at a time
         readonly object writerLock = new object(); // only one writer at a time
         readonly object gate = new object();  // protect other fields
-        Slice<byte> data;
+        Block<byte> data;
         Exception readError;  // error to give to writes if the reader is closed 
         Exception writeError; // error to give to reads if the writer is closed 
 
-        public IOResult Read(Slice<byte> buf)
+        public IOResult Read(Block<byte> buf)
         {
             lock (readerLock)
                 lock (gate)
@@ -32,10 +32,10 @@ namespace BusterWood.InputOutput
                         Monitor.Wait(readerLock);
                     }
                     int bytesCopied = data.CopyTo(buf);
-                    data = data.SubSlice(bytesCopied);
+                    data = data.Slice(bytesCopied);
                     if (data.Length == 0)
                     {
-                        data = new Slice<byte>();
+                        data = new Block<byte>();
                         lock(writerLock)
                             Monitor.Pulse(writerLock);
                     }
@@ -43,12 +43,12 @@ namespace BusterWood.InputOutput
                 }
         }
 
-        public Task<IOResult> ReadAsync(Slice<byte> buf)
+        public Task<IOResult> ReadAsync(Block<byte> buf)
         {
             throw new NotImplementedException();
         }
 
-        public IOResult Write(Slice<byte> buf)
+        public IOResult Write(Block<byte> buf)
         {
             Exception err = null;
             lock (writerLock)
@@ -73,12 +73,12 @@ namespace BusterWood.InputOutput
                         Monitor.Wait(writerLock);
                     }
                     var n = buf.Length - data.Length;
-                    data = new Slice<byte>();
+                    data = new Block<byte>();
                     return new IOResult(n, err);
                 }
         }
 
-        public Task<IOResult> WriteAsync(Slice<byte> buf)
+        public Task<IOResult> WriteAsync(Block<byte> buf)
         {
             throw new NotImplementedException();
         }

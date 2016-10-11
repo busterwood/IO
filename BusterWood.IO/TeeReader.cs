@@ -18,24 +18,24 @@ namespace BusterWood.InputOutput
             this.dst = dst;
         }
 
-        public IOResult Read(Slice<byte> buf)
+        public IOResult Read(Block<byte> buf)
         {
             var rr = src.Read(buf);
             if (rr.Bytes > 0)
             {
-                var wr = dst.Write(buf.SubSlice(0, rr.Bytes));
+                var wr = dst.Write(buf.Slice(0, rr.Bytes));
                 if (wr.Error != null)
                     return wr;
             }
             return rr;
         }
 
-        public async Task<IOResult> ReadAsync(Slice<byte> buf)
+        public async Task<IOResult> ReadAsync(Block<byte> buf)
         {
             var rr = await src.ReadAsync(buf);
             if (rr.Bytes > 0)
             {
-                var wr = await dst.WriteAsync(buf.SubSlice(0, rr.Bytes));
+                var wr = await dst.WriteAsync(buf.Slice(0, rr.Bytes));
                 if (wr.Error != null)
                     return wr;
             }
