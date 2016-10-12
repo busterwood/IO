@@ -162,7 +162,23 @@ namespace BusterWood.InputOutput
                 return new IOLongResult(res.Bytes, EOF);
             return res;
         }
+
+        public static PipeEnds Pipe()
+        {
+            var p = new Pipe();
+            return new PipeEnds(new PipeReader(p), new PipeWriter(p));
+        }
     }
 
+    public struct PipeEnds
+    {
+        public PipeReader Reader { get; }
+        public PipeWriter Writer { get; }
 
+        public PipeEnds(PipeReader reader, PipeWriter writer)
+        {
+            Reader = reader;
+            Writer = writer;
+        }
+    }
 }

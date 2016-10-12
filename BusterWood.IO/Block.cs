@@ -94,7 +94,7 @@ namespace BusterWood.InputOutput
         public static implicit operator Block<T>(T[] array) => new Block<T>(array);
     }
 
-    public static class Extensions
+    public static partial class Extensions
     {
         public static Block<T> Slice<T>(this T[] array, int start) => new Block<T>(array, start, array.Length);
 

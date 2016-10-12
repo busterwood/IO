@@ -1,10 +1,5 @@
 ﻿using BusterWood.InputOutput;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UnitTests
 {
@@ -17,7 +12,7 @@ namespace UnitTests
             Assert.AreEqual(0, new Block<byte>().Length);
         }
 
-        [TestCase(0, 0, 0)]
+        [TestCase(0, 0, 0)] // zero length block is allowed
         [TestCase(0, 1, 1)]
         [TestCase(1, 1, 0)]
         [TestCase(1, 2, 1)]
@@ -76,6 +71,7 @@ namespace UnitTests
             Assert.AreSame(arr, b.Array);
         }
 
+        [TestCase(0, 0, 3)] // zero length slice is allowed
         [TestCase(0, 1, 2)]
         [TestCase(0, 2, 1)]
         [TestCase(1, 2, 1)]
