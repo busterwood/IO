@@ -113,7 +113,7 @@ namespace BusterWood.InputOutput
         }
     }
 
-    public class PipeReader : IReader
+    public class PipeReader : IReadCloser
     {
         readonly Pipe pipe;
 
@@ -127,9 +127,11 @@ namespace BusterWood.InputOutput
         public Task<IOResult> ReadAsync(Block<byte> buf) => pipe.ReadAsync(buf);
 
         public void Close(Exception err = null) => pipe.ReaderClose(err);
+
+        public void Close() => pipe.ReaderClose(null);
     }
 
-    public class PipeWriter : IWriter
+    public class PipeWriter : IWriteCloser
     {
         readonly Pipe pipe;
 
@@ -143,6 +145,8 @@ namespace BusterWood.InputOutput
         public Task<IOResult> WriteAsync(Block<byte> buf) => pipe.WriteAsync(buf);
 
         public void Close(Exception err = null) => pipe.WriterClose(err);
+
+        public void Close() => pipe.WriterClose(null);
     }
 
     public static partial class Extensions

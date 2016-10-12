@@ -49,6 +49,13 @@ namespace BusterWood.InputOutput
                 if (index < 0 || i >= _end) throw new ArgumentOutOfRangeException(nameof(index));
                 return _array[i];
             }
+            set
+            {
+                if (_array == null) throw new InvalidOperationException("Backing array is null");
+                int i = _start + index;
+                if (index < 0 || i >= _end) throw new ArgumentOutOfRangeException(nameof(index));
+                _array[i] = value;
+            }
         }
 
         public int CopyTo(Block<T> buf)

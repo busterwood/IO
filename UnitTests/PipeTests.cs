@@ -27,7 +27,7 @@ namespace UnitTests
             pipe.Writer.Close();
         }
 
-        void CheckWrite(IWriter w, byte[] data, ManualResetEventSlim finished)
+        void CheckWrite(IWriteCloser w, byte[] data, ManualResetEventSlim finished)
         {
             var res = w.Write(data);
             Assert.IsNull(res.Error);
@@ -36,7 +36,7 @@ namespace UnitTests
         }
 
         [Test]
-        public void test_sequence_of_reader_and_writes()
+        public void test_sequence_of_reads_and_writes()
         {
             var c = new BlockingCollection<int>();
             var pipe = IO.Pipe();
@@ -76,6 +76,56 @@ namespace UnitTests
                 }
                 c.Add(res.Bytes);
             }
+        }
+
+        [Test]
+        public void test_a_large_write_that_requires_multiple_reads_to_satisfy()
+        {
+            var c = new BlockingCollection<IOResult>();
+            var pipe = IO.Pipe();
+            Block<byte> wdat = new byte[128];
+            for (var i = 0; i < wdat.Length; i++) {
+                wdat[i] = (byte)i;
+            }
+            ThreadPool.QueueUserWorkItem(_ => Writer(pipe.Writer, wdat, c));
+            Block<byte> rdat = new byte[1024];
+            var tot = 0;
+            for (var n = 1; n <= 256; n*=2)
+            {
+                var res = pipe.Reader.Read(rdat.Slice(tot, tot + n));
+                if (res.Error != null & res.Error != IO.EOF)
+                    Assert.Fail("Error reading: " + res.Error);
+
+                // only final two reads should be short - 1 byte, then 0
+                var expect = n;
+    			if (n == 128) {
+                    expect = 1;
+    			} else if (n == 256) {
+                    expect = 0;
+    				if (res.Error != IO.EOF) {
+                        Assert.Fail("read at end: " + res.Error);
+    				}
+    			}
+                Assert.AreEqual(expect, res.Bytes, "read did not match expected");
+                tot += res.Bytes;
+            }
+            var pr = c.Take();
+            if (pr.Bytes != 128 || pr.Error != null) {
+                Assert.Fail($"write 128: {pr.Bytes}, {pr.Error}");
+    		}
+            Assert.AreEqual(128, "total read");
+    		for (byte i = 0; i < 128; i++) {
+    			if (rdat[i] != i) {
+                    Assert.Fail($"rdat[{i}] = {rdat[i]}");
+                }
+    		}
+        }
+
+        void Writer(IWriteCloser w, Block<byte> buf, BlockingCollection<IOResult> c)
+        {
+            var res = w.Write(buf);
+            w.Close();
+            c.Add(res);
         }
     }
 }

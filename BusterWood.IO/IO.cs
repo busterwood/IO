@@ -25,7 +25,15 @@ namespace BusterWood.InputOutput
         Task<IOResult> WriteAsync(Block<byte> buf);
     }
 
-    /// <summary>The result of a <see cref="IReader.Read(Block{byte})"/> or <see cref="IWriter.Write(Block{byte})"/></summary>
+    public interface ICloser
+    {
+        void Close();
+    }
+
+    public interface IReadCloser : IReader, ICloser { }
+    public interface IWriteCloser : IWriter, ICloser { }
+
+    /// <summary>The result of a <see cref="IReader.Read(Block{byte})"/> or <see cref="IWriteCloser.Write(Block{byte})"/></summary>
     public struct IOResult
     {
         public readonly int Bytes;
