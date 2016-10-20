@@ -33,6 +33,7 @@
     <Compile Include="Block.cs" />
     <Compile Include="IO.cs" />
     <Compile Include="LimitReader.cs" />
+    <Compile Include="MemoryReader.cs" />
     <Compile Include="MultiReader.cs" />
     <Compile Include="MultiWriter.cs" />
     <Compile Include="Pipe.cs" />

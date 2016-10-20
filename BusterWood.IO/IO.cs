@@ -31,6 +31,7 @@ namespace BusterWood.InputOutput
     }
 
     public interface IReadCloser : IReader, ICloser { }
+
     public interface IWriteCloser : IWriter, ICloser { }
 
     /// <summary>The result of a <see cref="IReader.Read(Block{byte})"/> or <see cref="IWriteCloser.Write(Block{byte})"/></summary>
@@ -61,9 +62,12 @@ namespace BusterWood.InputOutput
     public static class IO
     {
         public static readonly EndOfStreamException EOF = new EndOfStreamException();
+
         public static readonly IOException ShortWrite = new IOException("Short write error");
 
-        public static IReader ReaderFromStream(Stream stream) => new StreamReaderWrapper(stream);
+        public static IReader Reader(Stream stream) => new StreamReaderWrapper(stream);
+
+        public static IReader Reader(Block<byte> data) => new MemoryReader(data);
 
         public static IReader MultiReader(params IReader[] readers) => new MultiReader(readers);
 

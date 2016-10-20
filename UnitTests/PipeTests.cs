@@ -113,7 +113,7 @@ namespace UnitTests
             if (pr.Bytes != 128 || pr.Error != null) {
                 Assert.Fail($"write 128: {pr.Bytes}, {pr.Error}");
     		}
-            Assert.AreEqual(128, "total read");
+            Assert.AreEqual(128, tot, "total read");
     		for (byte i = 0; i < 128; i++) {
     			if (rdat[i] != i) {
                     Assert.Fail($"rdat[{i}] = {rdat[i]}");

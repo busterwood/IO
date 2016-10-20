@@ -39,10 +39,15 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsyncPipeTests.cs" />
     <Compile Include="BlockTests.cs" />
+    <Compile Include="LimitReaderTests.cs" />
+    <Compile Include="MultiReaderTests.cs" />
+    <Compile Include="MultiWriterTests.cs" />
     <Compile Include="PipeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StreamReaderWrapperTests.cs" />
+    <Compile Include="TeeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BusterWood.IO\BusterWood.IO.csproj">

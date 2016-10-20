@@ -11,6 +11,10 @@ namespace BusterWood.InputOutput
         readonly int _start; // inclusive
         readonly int _end; // exclusive
 
+        public Block(int size) : this(new T[size]) { }
+
+        public Block(int size, int capacity) : this(new T[capacity], 0, size) { }
+
         public Block(T[] array)
         {
             if (array == null) throw new ArgumentNullException(nameof(array));

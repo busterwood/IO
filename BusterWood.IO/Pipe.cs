@@ -51,9 +51,31 @@ namespace BusterWood.InputOutput
             }
         }
 
-        public Task<IOResult> ReadAsync(Block<byte> buf)
+        public async Task<IOResult> ReadAsync(Block<byte> buf)
         {
-            throw new NotImplementedException();
+            using (await readLock.LockAsync())
+            using (await gate.LockAsync())
+            {
+                for (;;)
+                {
+                    if (readError != null)
+                        return new IOResult(0, PipeClosed);
+                    if (data.Length > 0)
+                        break;
+                    if (writeError != null)
+                        return new IOResult(0, writeError);
+
+                    await readCV.WaitAsync();
+                }
+                int bytesCopied = data.CopyTo(buf);
+                data = data.Slice(bytesCopied);
+                if (data.Length == 0)
+                {
+                    data = new Block<byte>();
+                    writeCV.Signal();
+                }
+                return new IOResult(bytesCopied, null);
+            }
         }
 
         public IOResult Write(Block<byte> buf)
@@ -87,9 +109,35 @@ namespace BusterWood.InputOutput
             }
         }
 
-        public Task<IOResult> WriteAsync(Block<byte> buf)
+        public async Task<IOResult> WriteAsync(Block<byte> buf)
         {
-            throw new NotImplementedException();
+            Exception err = null;
+            using (await writeLock.LockAsync())
+            using (await gate.LockAsync())
+            {
+                if (writeError != null)
+                    return new IOResult(0, PipeClosed);
+                data = buf;
+                readCV.Signal();
+
+                for (;;)
+                {
+                    if (data.Length == 0)
+                        break;
+                    if (readError != null)
+                    {
+                        err = readError;
+                        break;
+                    }
+                    if (writeError != null)
+                        err = PipeClosed;
+
+                    await writeCV.WaitAsync();
+                }
+                var n = buf.Length - data.Length;
+                data = new Block<byte>();
+                return new IOResult(n, err);
+            }
         }
 
         public void ReaderClose(Exception err)
