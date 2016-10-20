@@ -11,6 +11,9 @@ namespace BusterWood.InputOutput
         /// <returns>the number of <see cref="IOResult.Bytes"/> read and any error that caused read to stop early</returns>
         IOResult Read(Block<byte> buf);
 
+        /// <summary>Asynchronous read up of <see cref="Block{}.Length"/> bytes into <paramref name="buf"/> from the underlying data stream</summary>
+        /// <param name="buf">Where the read data is written too</param>
+        /// <returns>the number of <see cref="IOResult.Bytes"/> read and any error that caused read to stop early</returns>
         Task<IOResult> ReadAsync(Block<byte> buf);
     }
 
@@ -22,19 +25,36 @@ namespace BusterWood.InputOutput
         /// <remarks>Implementation must not modify the contents of <paramref name="buf"/></remarks>
         IOResult Write(Block<byte> buf);
 
+        /// <summary>Asynchronous writes the whole of <paramref name="buf"/> to the underlying data stream</summary>
+        /// <param name="buf"></param>
+        /// <returns>the number of <see cref="IOResult.Bytes"/> written and any error that caused write to stop early</returns>
+        /// <remarks>Implementation must not modify the contents of <paramref name="buf"/></remarks>
         Task<IOResult> WriteAsync(Block<byte> buf);
+    }
+
+    public interface ISeeker
+    {
+        IOLongResult Seek(long offset, SeekOrigin relativeTo); // there is no async equivalent in Win32
     }
 
     public interface ICloser
     {
-        void Close();
+        void Close();   // there is no async equivalent, but it *could* be useful for Pipe
     }
 
     public interface IReadCloser : IReader, ICloser { }
 
     public interface IWriteCloser : IWriter, ICloser { }
 
-    /// <summary>The result of a <see cref="IReader.Read(Block{byte})"/> or <see cref="IWriteCloser.Write(Block{byte})"/></summary>
+    public interface IReadSeeker: IReader, ISeeker { }
+
+    public interface IReadSeekCloser: IReader, ISeeker, ICloser { }
+
+    public interface IWriteSeeker: IWriter, ISeeker { }
+
+    public interface IWriteSeekCloser: IWriter, ISeeker, ICloser { }
+
+    /// <summary>The result of a <see cref="IReader.Read(Block{byte})"/> or <see cref="IWriter.Write(Block{byte})"/></summary>
     public struct IOResult
     {
         public readonly int Bytes;
