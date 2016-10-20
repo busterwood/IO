@@ -20,8 +20,7 @@ namespace UnitTests
         [Test]
         public void can_read_from_one_readers()
         {
-            var data = new byte[] { 1, 2 };
-            var reader = Io.MultiReader(Io.Reader(data));
+            var reader = Io.MultiReader(new byte[] { 1, 2 }.Reader());
             var dest = new Block<byte>(10);
             var res = reader.Read(dest);
             Assert.AreEqual(2, res.Bytes, "bytesRead");
@@ -33,8 +32,7 @@ namespace UnitTests
         [Test]
         public void reading_past_end_of_data_returns_EOF()
         {
-            var data = new byte[] { 1, 2 };
-            var reader = Io.MultiReader(Io.Reader(data));
+            var reader = Io.MultiReader(new byte[] { 1, 2 }.Reader());
             var dest = new Block<byte>(10);
             var res = reader.Read(dest);
             res = reader.Read(dest);
@@ -45,7 +43,7 @@ namespace UnitTests
         [Test]
         public void can_read_from_partial_data_from_mutliple_readers()
         {
-            var reader = Io.MultiReader(Io.Reader(new byte[] { 1, 2, 3 }), Io.Reader(new byte[] { 4, 5, 6 }));
+            var reader = Io.MultiReader(new byte[] { 1, 2, 3 }.Reader(), new byte[] { 4, 5, 6 }.Reader());
             var dest = new Block<byte>(2);
             var res = reader.Read(dest);
             Assert.AreEqual(2, res.Bytes, "bytesRead");
@@ -92,8 +90,7 @@ namespace UnitTests
         [Test]
         public async Task can_read_from_one_readers()
         {
-            var data = new byte[] { 1, 2 };
-            var reader = Io.MultiReader(Io.Reader(data));
+            var reader = Io.MultiReader(new byte[] { 1, 2 }.Reader());
             var dest = new Block<byte>(10);
             var res = await reader.ReadAsync(dest);
             Assert.AreEqual(2, res.Bytes, "bytesRead");
@@ -105,8 +102,7 @@ namespace UnitTests
         [Test]
         public async Task reading_past_end_of_data_returns_EOF()
         {
-            var data = new byte[] { 1, 2 };
-            var reader = Io.MultiReader(Io.Reader(data));
+            var reader = Io.MultiReader(new byte[] { 1, 2 }.Reader());
             var dest = new Block<byte>(10);
             var res = await reader.ReadAsync(dest);
             res = await reader.ReadAsync(dest);
@@ -117,7 +113,7 @@ namespace UnitTests
         [Test]
         public async Task can_read_from_data_from_mutliple_readers()
         {
-            var reader = Io.MultiReader(Io.Reader(new byte[] { 1, 2, 3 }), Io.Reader(new byte[] { 4, 5, 6 }));
+            var reader = Io.MultiReader(new byte[] { 1, 2, 3 }.Reader(), new byte[] { 4, 5, 6 }.Reader());
             var dest = new Block<byte>(2);
             var res = await reader.ReadAsync(dest);
             Assert.AreEqual(2, res.Bytes, "bytesRead");

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace BusterWood.InputOutput
 {
-    class LimitReader : IReader
+    public class LimitReader : IReader
     {
         readonly IReader reader;
         long bytesRemaining;

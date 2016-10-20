@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 
 namespace BusterWood.InputOutput
 {
-    class StreamReaderWrapper : IReader
+    public class StreamReader : IReader
     {
         Stream stream;
 
-        public StreamReaderWrapper(Stream stream)
+        public StreamReader(Stream stream)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
             this.stream = stream;

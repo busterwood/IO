@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace BusterWood.InputOutput
 {
-    class Pipe : IReader, IWriter
+    public class Pipe : IReader, IWriter
     {
         static readonly IOException PipeClosed = new IOException("Pipe has been closed");
 

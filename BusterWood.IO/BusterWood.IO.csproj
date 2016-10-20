@@ -34,6 +34,7 @@
     <Compile Include="IO.cs" />
     <Compile Include="LimitReader.cs" />
     <Compile Include="MemoryReader.cs" />
+    <Compile Include="MemoryWriter.cs" />
     <Compile Include="MultiReader.cs" />
     <Compile Include="MultiWriter.cs" />
     <Compile Include="Pipe.cs" />

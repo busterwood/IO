@@ -12,8 +12,7 @@ namespace UnitTests
         public void reading_writes_the_data_read()
         {
             var output = new MemoryWriter(new Block<byte>(0, 10));
-            var input = new MemoryReader(new byte[] { 1, 2 });
-            IReader tee = Io.Tee(input, output);
+            var tee = new byte[] { 1, 2 }.Reader().Tee(output);
             var buf = new Block<byte>(10);
 
             // can read only
@@ -31,8 +30,7 @@ namespace UnitTests
         public void write_errors_are_returned_as_read_errors()
         {
             var output = new StubWriter { Error = new Exception() };
-            var input = new MemoryReader(new byte[] { 1, 2 });
-            IReader tee = Io.Tee(input, output);
+            var tee = new byte[] { 1, 2 }.Reader().Tee(output);
             var buf = new Block<byte>(10);
             var res = tee.Read(buf);
             Assert.AreEqual(0, res.Bytes, "Bytes");
@@ -47,8 +45,7 @@ namespace UnitTests
         public async Task reading_writes_the_data_read()
         {
             var output = new MemoryWriter(new Block<byte>(0, 10));
-            var input = new MemoryReader(new byte[] { 1, 2 });
-            IReader tee = Io.Tee(input, output);
+            var tee = new byte[] { 1, 2 }.Reader().Tee(output);
             var buf = new Block<byte>(10);
 
             // can read only
@@ -66,8 +63,7 @@ namespace UnitTests
         public async Task write_errors_are_returned_as_read_errors()
         {
             var output = new StubWriter { Error = new Exception() };
-            var input = new MemoryReader(new byte[] { 1, 2 });
-            IReader tee = Io.Tee(input, output);
+            var tee = new byte[] { 1, 2 }.Reader().Tee(output);
             var buf = new Block<byte>(10);
             var res = await tee.ReadAsync(buf);
             Assert.AreEqual(0, res.Bytes, "Bytes");

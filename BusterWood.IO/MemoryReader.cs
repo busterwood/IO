@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace BusterWood.InputOutput
 {
@@ -28,30 +27,6 @@ namespace BusterWood.InputOutput
                 return Task.FromResult(new IOResult(0, Io.EOF));
             _data = _data.Slice(bytesCopied);
             return Task.FromResult(new IOResult(bytesCopied, null));
-        }
-    }
-
-    public class MemoryWriter : IWriter
-    {
-        Block<byte> _data;
-
-        public Block<byte> Data => _data;
-        
-        public MemoryWriter(Block<byte> data)
-        {
-            _data = data;
-        }
-
-        public IOResult Write(Block<byte> buf)
-        {
-            _data = _data.Append(buf);
-            return new IOResult(buf.Length, null);
-        }
-
-        public Task<IOResult> WriteAsync(Block<byte> buf)
-        {
-            _data = _data.Append(buf);
-            return Task.FromResult(new IOResult(buf.Length, null));
         }
     }
 }

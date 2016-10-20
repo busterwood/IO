@@ -65,13 +65,15 @@ namespace BusterWood.InputOutput
 
         public static readonly IOException ShortWrite = new IOException("Short write error");
 
-        public static IReader Reader(Stream stream) => new StreamReaderWrapper(stream);
+        public static IReader Reader(this Stream stream) => new StreamReader(stream);
 
-        public static IReader Reader(Block<byte> data) => new MemoryReader(data);
+        public static IReader Reader(this byte[] data) => new MemoryReader(data);
+
+        public static IReader Reader(this Block<byte> data) => new MemoryReader(data);
+
+        public static IReader Limit(this IReader reader, long limit) => new LimitReader(reader, limit);
 
         public static IReader MultiReader(params IReader[] readers) => new MultiReader(readers);
-
-        public static IReader LimitReader(IReader reader, long limit) => new LimitReader(reader, limit);
 
         public static IWriter MultiWriter(params IWriter[] writers) => new MultiWriter(writers);
 
@@ -81,17 +83,17 @@ namespace BusterWood.InputOutput
         /// There is no internal buffering - the write must complete before the read completes.
         /// </summary>
         /// <remarks>Any error encountered while writing is reported as a read error.</remarks>
-        public static IReader Tee(IReader from, IWriter to) => new TeeReader(from, to);
+        public static IReader Tee(this IReader from, IWriter to) => new TeeReader(from, to);
 
         /// <summary>Copy copies from src to <paramref name="to"/> until either EOF is reached on <paramref name="from"/> or an error occurs. </summary>
         /// <returns>the number of bytes copied and the first error encountered while copying, if any</returns>
-        public static IOLongResult Copy(IReader from, IWriter to) => CopyBuffer(from, to, default(Block<byte>));
+        public static IOLongResult CopyTo(this IReader from, IWriter to) => CopyBuffer(from, to, default(Block<byte>));
 
         /// <summary>Copy copies from src to <paramref name="to"/> until either EOF is reached on <paramref name="from"/> or an error occurs. </summary>
         /// <returns>the number of bytes copied and the first error encountered while copying, if any</returns>
-        public static Task<IOLongResult> CopyAsync(IReader from, IWriter to) => CopyBufferAsync(from, to, default(Block<byte>));
+        public static Task<IOLongResult> CopyToAsync(this IReader from, IWriter to) => CopyBufferAsync(from, to, default(Block<byte>));
 
-        public static IOLongResult CopyBuffer(IReader from, IWriter to, Block<byte> buf)
+        public static IOLongResult CopyBuffer(this IReader from, IWriter to, Block<byte> buf)
         {
             if (from == null)
                 throw new ArgumentNullException(nameof(from));
@@ -122,7 +124,7 @@ namespace BusterWood.InputOutput
             }
         }
 
-        public static async Task<IOLongResult> CopyBufferAsync(IReader from, IWriter to, Block<byte> buf)
+        public static async Task<IOLongResult> CopyBufferAsync(this IReader from, IWriter to, Block<byte> buf)
         {
             if (from == null)
                 throw new ArgumentNullException(nameof(from));
@@ -155,9 +157,9 @@ namespace BusterWood.InputOutput
             }
         }
 
-        public static IOLongResult CopyN(IReader from, IWriter to, long bytes)
+        public static IOLongResult CopyTo(this IReader from, IWriter to, long bytes)
         {
-            var res = Copy(LimitReader(from, bytes), to);
+            var res = CopyTo(Limit(from, bytes), to);
             if (res.Bytes == bytes)
                 return new IOLongResult(res.Bytes, null);
             if (res.Bytes < bytes && res.Error == null)
@@ -165,9 +167,9 @@ namespace BusterWood.InputOutput
             return res;
         }
 
-        public static async Task<IOLongResult> CopyNAsync(IReader from, IWriter to, long bytes)
+        public static async Task<IOLongResult> CopyToAsync(this IReader from, IWriter to, long bytes)
         {
-            var res = await CopyAsync(LimitReader(from, bytes), to);
+            var res = await CopyToAsync(Limit(from, bytes), to);
             if (res.Bytes == bytes)
                 return new IOLongResult(res.Bytes, null);
             if (res.Bytes < bytes && res.Error == null)

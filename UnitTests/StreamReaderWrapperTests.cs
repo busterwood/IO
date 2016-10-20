@@ -15,8 +15,7 @@ namespace UnitTests
         [Test]
         public void can_read_from_a_stream()
         {
-            var input = new MemoryStream(new byte[] { 1, 2, 3, 4 });
-            IReader reader = Io.Reader(input);
+            IReader reader = new MemoryStream(new byte[] { 1, 2, 3, 4 }).Reader();
             var buf = new byte[4];
             var res = reader.Read(buf);
             Assert.AreEqual(4, res.Bytes, "Bytes read");
@@ -30,8 +29,7 @@ namespace UnitTests
         [Test]
         public void read_returns_EOF_when_stream_empty()
         {
-            var input = new MemoryStream(new byte[] {});
-            IReader reader = Io.Reader(input);
+            IReader reader = new MemoryStream(new byte[] { }).Reader();
             var buf = new byte[4];
             var res = reader.Read(buf);
             Assert.AreEqual(0, res.Bytes, "Bytes read");
@@ -41,8 +39,7 @@ namespace UnitTests
         [Test]
         public void read_returns_EOF_after_all_data_read_from_stream()
         {
-            var input = new MemoryStream(new byte[] {1, 2});
-            IReader reader = Io.Reader(input);
+            IReader reader = new MemoryStream(new byte[] { 1, 2 }).Reader();
             var buf = new byte[2];
             var res = reader.Read(buf);
             Assert.AreEqual(2, res.Bytes, "Bytes read");
@@ -58,8 +55,8 @@ namespace UnitTests
         [Test]
         public void object_disposed_exception_is_returned_in_the_result()
         {
-            var input = new MemoryStream(new byte[] {1, 2});
-            IReader reader = Io.Reader(input);
+            var input = new MemoryStream(new byte[] { 1, 2 });
+            IReader reader = input.Reader();
             input.Dispose();
             var buf = new byte[2];
             var res = reader.Read(buf);
