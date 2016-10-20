@@ -85,5 +85,27 @@ namespace UnitTests
             Assert.AreEqual(expectedCapacity, b.Capacity);
         }
 
+        [Test]
+        public void can_append_to_an_existing_array_that_has_spare_capacity()
+        {
+            var arr = new byte[] { 1, 0, 0 };
+            var b1 = arr.Slice(0, 1);
+            var b2 = b1.Append((byte)2);
+            Assert.AreEqual(2, b2.Length);
+            Assert.AreEqual(2, b2[1]);
+            Assert.AreSame(arr, b2.Array);
+        }
+
+        [Test]
+        public void appending_to_array_without_spare_capacity_creates_a_new_array()
+        {
+            var arr = new byte[] { 1 };
+            var b1 = arr.Slice(0);
+            var b2 = b1.Append((byte)2);
+            Assert.AreEqual(2, b2.Length);
+            Assert.AreEqual(2, b2[1]);
+            Assert.AreNotSame(arr, b2.Array);
+            Assert.AreEqual(4, b2.Capacity);
+        }
     }
 }

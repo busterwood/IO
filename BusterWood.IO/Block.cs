@@ -90,7 +90,7 @@ namespace BusterWood.InputOutput
         {
             if (start < 0) throw new ArgumentOutOfRangeException(nameof(start), "cannot be negative");
             if (end < start) throw new ArgumentOutOfRangeException(nameof(end), "cannot less than start");
-            if (end > _end) throw new ArgumentOutOfRangeException(nameof(end), "past the end");
+            if (end > _array.Length) throw new ArgumentOutOfRangeException(nameof(end), "past the end");
             return new Block<T>(_array, _start + start, _start + end);
         }
 
