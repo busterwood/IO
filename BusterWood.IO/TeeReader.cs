@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace BusterWood.InputOutput
 {
-    class TeeReader : IReader
+    public class TeeReader : IReader
     {
         readonly IWriter dst;
         readonly IReader src;

@@ -154,7 +154,7 @@ namespace BusterWood.InputOutput
         {
             using (gate.Lock())
             {
-                writeError = err ?? IO.EOF;
+                writeError = err ?? Io.EOF;
                 readCV.Signal();
                 writeCV.Signal();
             }

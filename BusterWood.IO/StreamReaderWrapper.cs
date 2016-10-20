@@ -19,7 +19,7 @@ namespace BusterWood.InputOutput
             try
             {
                 int bytes = stream.Read(dest.Array, dest.Offset, dest.Length);
-                return new IOResult(bytes, bytes == 0 ? IO.EOF : null);
+                return new IOResult(bytes, bytes == 0 ? Io.EOF : null);
             }
             catch (IOException ex)
             {
@@ -36,7 +36,7 @@ namespace BusterWood.InputOutput
             try
             {
                 int bytes = await stream.ReadAsync(dest.Array, dest.Offset, dest.Length);
-                return new IOResult(bytes, bytes == 0 ? IO.EOF : null);
+                return new IOResult(bytes, bytes == 0 ? Io.EOF : null);
             }
             catch (IOException ex)
             {

@@ -13,7 +13,7 @@ namespace UnitTests
         [Test]
         public void test_single_read_and_async_writer_pair()
         {
-            var pipe = IO.Pipe();
+            var pipe = Io.Pipe();
             var buf = new Block<byte>(new byte[64]);
             var testData = Encoding.UTF8.GetBytes("hello, world");
             var finished = new ManualResetEventSlim(false);
@@ -39,7 +39,7 @@ namespace UnitTests
         [Test]
         public async Task test_single_async_read_and_async_writer_pair()
         {
-            var pipe = IO.Pipe();
+            var pipe = Io.Pipe();
             var buf = new Block<byte>(new byte[64]);
             var testData = Encoding.UTF8.GetBytes("hello, world");
             var finished = new ManualResetEventSlim(false);
@@ -57,7 +57,7 @@ namespace UnitTests
         [Test]
         public async Task test_single_async_read_and_sync_writer_pair()
         {
-            var pipe = IO.Pipe();
+            var pipe = Io.Pipe();
             var buf = new Block<byte>(new byte[64]);
             var testData = Encoding.UTF8.GetBytes("hello, world");
             var finished = new ManualResetEventSlim(false);
@@ -84,7 +84,7 @@ namespace UnitTests
         public void test_sequence_of_reads_and_writes()
         {
             var c = new BlockingCollection<int>();
-            var pipe = IO.Pipe();
+            var pipe = Io.Pipe();
             ThreadPool.QueueUserWorkItem(_ => SyncReader(pipe.Reader, c));
             Block<byte> buf = new byte[64];
             for (var i = 0; i < 5; i++)
@@ -110,7 +110,7 @@ namespace UnitTests
             for (;;)
             {
                 var res = r.Read(buf);
-                if (res.Error == IO.EOF)
+                if (res.Error == Io.EOF)
                 {
                     c.Add(0);
                     break;
@@ -127,7 +127,7 @@ namespace UnitTests
         public void test_sequence_of_async_reads_and_sync_writes()
         {
             var c = new BlockingCollection<int>();
-            var pipe = IO.Pipe();
+            var pipe = Io.Pipe();
             Task.Run(() => AsyncReader(pipe.Reader, c));
             Block<byte> buf = new byte[64];
             for (var i = 0; i < 5; i++)
@@ -151,7 +151,7 @@ namespace UnitTests
         public async Task test_sequence_of_async_reads_and_async_writes()
         {
             var c = new BlockingCollection<int>();
-            var pipe = IO.Pipe();
+            var pipe = Io.Pipe();
             Task.Run(() => AsyncReader(pipe.Reader, c));
             Block<byte> buf = new byte[64];
             for (var i = 0; i < 5; i++)
@@ -177,7 +177,7 @@ namespace UnitTests
             for (;;)
             {
                 var res = await r.ReadAsync(buf);
-                if (res.Error == IO.EOF)
+                if (res.Error == Io.EOF)
                 {
                     c.Add(0);
                     break;
@@ -194,7 +194,7 @@ namespace UnitTests
         public async Task test_sequence_of_sync_reads_and_async_writes()
         {
             var c = new BlockingCollection<int>();
-            var pipe = IO.Pipe();
+            var pipe = Io.Pipe();
             Task.Run(() => SyncReader(pipe.Reader, c));
             Block<byte> buf = new byte[64];
             for (var i = 0; i < 5; i++)

@@ -19,7 +19,7 @@ namespace BusterWood.InputOutput
         public IOResult Read(Block<byte> dest)
         {
             if (bytesRemaining <= 0)
-                return new IOResult(0, IO.EOF);
+                return new IOResult(0, Io.EOF);
             if (dest.Length > bytesRemaining)
                 dest = dest.Slice(0, (int)bytesRemaining);
             var res = reader.Read(dest);
@@ -30,7 +30,7 @@ namespace BusterWood.InputOutput
         public async Task<IOResult> ReadAsync(Block<byte> dest)
         {
             if (bytesRemaining <= 0)
-                return new IOResult(0, IO.EOF);
+                return new IOResult(0, Io.EOF);
             if (dest.Length > bytesRemaining)
                 dest = dest.Slice(0, (int)bytesRemaining);
             var res = await reader.ReadAsync(dest);

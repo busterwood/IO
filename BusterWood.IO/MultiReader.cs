@@ -2,7 +2,7 @@
 
 namespace BusterWood.InputOutput
 {
-    class MultiReader : IReader
+    public class MultiReader : IReader
     {
         Block<IReader> readers;
 
@@ -27,9 +27,9 @@ namespace BusterWood.InputOutput
                 }
 
                 var result = readers[0].Read(dest);
-                if (result.Bytes > 0 || result.Error != IO.EOF)
+                if (result.Bytes > 0 || result.Error != Io.EOF)
                 {
-                    if (result.Error == IO.EOF)
+                    if (result.Error == Io.EOF)
                     {
                         // dont return EOF yet, there may be more bytes in the remaining readers
                         return new IOResult(result.Bytes, null);
@@ -38,7 +38,7 @@ namespace BusterWood.InputOutput
                 }
                 readers = readers.Slice(1);
             }
-            return new IOResult(0, IO.EOF);
+            return new IOResult(0, Io.EOF);
         }
 
         public async Task<IOResult> ReadAsync(Block<byte> dest)
@@ -57,9 +57,9 @@ namespace BusterWood.InputOutput
                 }
 
                 var result = await readers[0].ReadAsync(dest);
-                if (result.Bytes > 0 || result.Error != IO.EOF)
+                if (result.Bytes > 0 || result.Error != Io.EOF)
                 {
-                    if (result.Error == IO.EOF)
+                    if (result.Error == Io.EOF)
                     {
                         // dont return EOF yet, there may be more bytes in the remaining readers
                         return new IOResult(result.Bytes, null);
@@ -68,7 +68,7 @@ namespace BusterWood.InputOutput
                 }
                 readers = readers.Slice(1);
             }
-            return new IOResult(0, IO.EOF);
+            return new IOResult(0, Io.EOF);
         }
     }
 }

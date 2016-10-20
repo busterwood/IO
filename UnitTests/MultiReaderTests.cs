@@ -10,18 +10,18 @@ namespace UnitTests
         [Test]
         public void can_read_from_zero_readers()
         {
-            var reader = IO.MultiReader();
+            var reader = Io.MultiReader();
             var dest = new Block<byte>(10);
             var res = reader.Read(dest);
             Assert.AreEqual(0, res.Bytes, "bytesRead");
-            Assert.AreEqual(IO.EOF, res.Error, "Error");
+            Assert.AreEqual(Io.EOF, res.Error, "Error");
         }
 
         [Test]
         public void can_read_from_one_readers()
         {
             var data = new byte[] { 1, 2 };
-            var reader = IO.MultiReader(IO.Reader(data));
+            var reader = Io.MultiReader(Io.Reader(data));
             var dest = new Block<byte>(10);
             var res = reader.Read(dest);
             Assert.AreEqual(2, res.Bytes, "bytesRead");
@@ -34,18 +34,18 @@ namespace UnitTests
         public void reading_past_end_of_data_returns_EOF()
         {
             var data = new byte[] { 1, 2 };
-            var reader = IO.MultiReader(IO.Reader(data));
+            var reader = Io.MultiReader(Io.Reader(data));
             var dest = new Block<byte>(10);
             var res = reader.Read(dest);
             res = reader.Read(dest);
             Assert.AreEqual(0, res.Bytes, "bytesRead");
-            Assert.AreEqual(IO.EOF, res.Error, "Error");
+            Assert.AreEqual(Io.EOF, res.Error, "Error");
         }
 
         [Test]
         public void can_read_from_partial_data_from_mutliple_readers()
         {
-            var reader = IO.MultiReader(IO.Reader(new byte[] { 1, 2, 3 }), IO.Reader(new byte[] { 4, 5, 6 }));
+            var reader = Io.MultiReader(Io.Reader(new byte[] { 1, 2, 3 }), Io.Reader(new byte[] { 4, 5, 6 }));
             var dest = new Block<byte>(2);
             var res = reader.Read(dest);
             Assert.AreEqual(2, res.Bytes, "bytesRead");
@@ -71,7 +71,7 @@ namespace UnitTests
 
             res = reader.Read(dest);
             Assert.AreEqual(0, res.Bytes, "bytesRead");
-            Assert.AreEqual(IO.EOF, res.Error, "Error");
+            Assert.AreEqual(Io.EOF, res.Error, "Error");
         }
 
     }
@@ -82,18 +82,18 @@ namespace UnitTests
         [Test]
         public async Task can_read_from_zero_readers()
         {
-            var reader = IO.MultiReader();
+            var reader = Io.MultiReader();
             var dest = new Block<byte>(10);
             var res = await reader.ReadAsync(dest);
             Assert.AreEqual(0, res.Bytes, "bytesRead");
-            Assert.AreEqual(IO.EOF, res.Error, "Error");
+            Assert.AreEqual(Io.EOF, res.Error, "Error");
         }
 
         [Test]
         public async Task can_read_from_one_readers()
         {
             var data = new byte[] { 1, 2 };
-            var reader = IO.MultiReader(IO.Reader(data));
+            var reader = Io.MultiReader(Io.Reader(data));
             var dest = new Block<byte>(10);
             var res = await reader.ReadAsync(dest);
             Assert.AreEqual(2, res.Bytes, "bytesRead");
@@ -106,18 +106,18 @@ namespace UnitTests
         public async Task reading_past_end_of_data_returns_EOF()
         {
             var data = new byte[] { 1, 2 };
-            var reader = IO.MultiReader(IO.Reader(data));
+            var reader = Io.MultiReader(Io.Reader(data));
             var dest = new Block<byte>(10);
             var res = await reader.ReadAsync(dest);
             res = await reader.ReadAsync(dest);
             Assert.AreEqual(0, res.Bytes, "bytesRead");
-            Assert.AreEqual(IO.EOF, res.Error, "Error");
+            Assert.AreEqual(Io.EOF, res.Error, "Error");
         }
 
         [Test]
         public async Task can_read_from_data_from_mutliple_readers()
         {
-            var reader = IO.MultiReader(IO.Reader(new byte[] { 1, 2, 3 }), IO.Reader(new byte[] { 4, 5, 6 }));
+            var reader = Io.MultiReader(Io.Reader(new byte[] { 1, 2, 3 }), Io.Reader(new byte[] { 4, 5, 6 }));
             var dest = new Block<byte>(2);
             var res = await reader.ReadAsync(dest);
             Assert.AreEqual(2, res.Bytes, "bytesRead");
@@ -143,7 +143,7 @@ namespace UnitTests
 
             res = await reader.ReadAsync(dest);
             Assert.AreEqual(0, res.Bytes, "bytesRead");
-            Assert.AreEqual(IO.EOF, res.Error, "Error");
+            Assert.AreEqual(Io.EOF, res.Error, "Error");
         }
     }
 }

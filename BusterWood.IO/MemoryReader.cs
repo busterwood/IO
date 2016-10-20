@@ -16,7 +16,7 @@ namespace BusterWood.InputOutput
         {
             int bytesCopied = _data.CopyTo(buf);
             if (bytesCopied == 0)
-                return new IOResult(0, IO.EOF);
+                return new IOResult(0, Io.EOF);
             _data = _data.Slice(bytesCopied);
             return new IOResult(bytesCopied, null);
         }
@@ -25,7 +25,7 @@ namespace BusterWood.InputOutput
         {
             int bytesCopied = _data.CopyTo(buf);
             if (bytesCopied == 0)
-                return Task.FromResult(new IOResult(0, IO.EOF));
+                return Task.FromResult(new IOResult(0, Io.EOF));
             _data = _data.Slice(bytesCopied);
             return Task.FromResult(new IOResult(bytesCopied, null));
         }

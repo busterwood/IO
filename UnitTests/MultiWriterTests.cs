@@ -14,7 +14,7 @@ namespace UnitTests
         [Test]
         public void can_write_to_zero_writers()
         {
-            var writer = IO.MultiWriter();
+            var writer = Io.MultiWriter();
             var data = new Block<byte>(new byte[] { 1 });
             var res = writer.Write(data);
             Assert.AreEqual(data.Length, res.Bytes);
@@ -25,7 +25,7 @@ namespace UnitTests
         public void can_write_to_one_writers()
         {
             var mem = new MemoryWriter(new Block<byte>(0, 10));
-            var writer = IO.MultiWriter(mem);
+            var writer = Io.MultiWriter(mem);
             var data = new Block<byte>(new byte[] { 1 });
             var res = writer.Write(data);
             Assert.AreEqual(data.Length, res.Bytes);
@@ -35,11 +35,22 @@ namespace UnitTests
         }
 
         [Test]
+        public void short_write_error_returned_if_only_part_of_input_is_written()
+        {
+            var mem = new StubWriter { Limit = 1 };
+            var writer = Io.MultiWriter(mem);
+            var data = new Block<byte>(new byte[] { 1, 2 });
+            var res = writer.Write(data);
+            Assert.AreEqual(1, res.Bytes);
+            Assert.AreEqual(Io.ShortWrite, res.Error);
+        }
+
+        [Test]
         public void can_write_to_multiple_writers()
         {
             var mem1 = new MemoryWriter(new Block<byte>(0, 10));
             var mem2 = new MemoryWriter(new Block<byte>(0, 10));
-            var writer = IO.MultiWriter(mem1, mem2);
+            var writer = Io.MultiWriter(mem1, mem2);
             var data = new Block<byte>(new byte[] { 1 });
             var res = writer.Write(data);
             Assert.AreEqual(data.Length, res.Bytes);
@@ -59,7 +70,7 @@ namespace UnitTests
         [Test]
         public async Task can_write_to_zero_writers()
         {
-            var writer = IO.MultiWriter();
+            var writer = Io.MultiWriter();
             var data = new Block<byte>(new byte[] { 1 });
             var res = await writer.WriteAsync(data);
             Assert.AreEqual(data.Length, res.Bytes);
@@ -70,7 +81,7 @@ namespace UnitTests
         public async Task can_write_to_one_writers()
         {
             var mem = new MemoryWriter(new Block<byte>(0, 10));
-            var writer = IO.MultiWriter(mem);
+            var writer = Io.MultiWriter(mem);
             var data = new Block<byte>(new byte[] { 1 });
             var res = await writer.WriteAsync(data);
             Assert.AreEqual(data.Length, res.Bytes);
@@ -80,11 +91,22 @@ namespace UnitTests
         }
 
         [Test]
+        public async Task short_write_error_returned_if_only_part_of_input_is_written()
+        {
+            var mem = new StubWriter { Limit = 1 };
+            var writer = Io.MultiWriter(mem);
+            var data = new Block<byte>(new byte[] { 1, 2 });
+            var res = await writer.WriteAsync(data);
+            Assert.AreEqual(1, res.Bytes);
+            Assert.AreEqual(Io.ShortWrite, res.Error);
+        }
+
+        [Test]
         public async Task can_write_to_multiple_writers()
         {
             var mem1 = new MemoryWriter(new Block<byte>(0, 10));
             var mem2 = new MemoryWriter(new Block<byte>(0, 10));
-            var writer = IO.MultiWriter(mem1, mem2);
+            var writer = Io.MultiWriter(mem1, mem2);
             var data = new Block<byte>(new byte[] { 1 });
             var res = await writer.WriteAsync(data);
             Assert.AreEqual(data.Length, res.Bytes);

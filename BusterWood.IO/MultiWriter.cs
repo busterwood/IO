@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace BusterWood.InputOutput
 {
-    class MultiWriter : IWriter
+    public class MultiWriter : IWriter
     {
         readonly IWriter[] writers;
 
@@ -20,7 +20,7 @@ namespace BusterWood.InputOutput
                 var res = w.Write(src);
                 if (res.Bytes != src.Length)
                 {
-                    return new IOResult(0, IO.ShortWrite);
+                    return new IOResult(res.Bytes, Io.ShortWrite);
                 }
             }
             return new IOResult(src.Length, null);
@@ -33,7 +33,7 @@ namespace BusterWood.InputOutput
                 var res = await w.WriteAsync(src);
                 if (res.Bytes != src.Length)
                 {
-                    return new IOResult(0, IO.ShortWrite);
+                    return new IOResult(res.Bytes, Io.ShortWrite);
                 }
             }
             return new IOResult(src.Length, null);

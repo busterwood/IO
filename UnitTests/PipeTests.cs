@@ -12,7 +12,7 @@ namespace UnitTests
         [Test]
         public void test_single_read_writer_pair()
         {
-            var pipe = IO.Pipe();
+            var pipe = Io.Pipe();
             var buf = new Block<byte>(new byte[64]);
             var testData = Encoding.UTF8.GetBytes("hello, world");
             var finished = new ManualResetEventSlim(false);
@@ -39,7 +39,7 @@ namespace UnitTests
         public void test_sequence_of_reads_and_writes()
         {
             var c = new BlockingCollection<int>();
-            var pipe = IO.Pipe();
+            var pipe = Io.Pipe();
             ThreadPool.QueueUserWorkItem(_ => Reader(pipe.Reader, c));
             Block<byte> buf = new byte[64];
             for (var i = 0; i < 5; i++)
@@ -65,7 +65,7 @@ namespace UnitTests
             for (;;)
             {
                 var res = r.Read(buf);
-                if (res.Error == IO.EOF)
+                if (res.Error == Io.EOF)
                 {
                     c.Add(0);
                     break;
@@ -82,7 +82,7 @@ namespace UnitTests
         public void test_a_large_write_that_requires_multiple_reads_to_satisfy()
         {
             var c = new BlockingCollection<IOResult>();
-            var pipe = IO.Pipe();
+            var pipe = Io.Pipe();
             Block<byte> wdat = new byte[128];
             for (var i = 0; i < wdat.Length; i++) {
                 wdat[i] = (byte)i;
@@ -93,7 +93,7 @@ namespace UnitTests
             for (var n = 1; n <= 256; n*=2)
             {
                 var res = pipe.Reader.Read(rdat.Slice(tot, tot + n));
-                if (res.Error != null & res.Error != IO.EOF)
+                if (res.Error != null & res.Error != Io.EOF)
                     Assert.Fail("Error reading: " + res.Error);
 
                 // only final two reads should be short - 1 byte, then 0
@@ -102,7 +102,7 @@ namespace UnitTests
                     expect = 1;
     			} else if (n == 256) {
                     expect = 0;
-    				if (res.Error != IO.EOF) {
+    				if (res.Error != Io.EOF) {
                         Assert.Fail("read at end: " + res.Error);
     				}
     			}

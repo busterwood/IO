@@ -16,20 +16,20 @@ namespace UnitTests
         public void eof_returned_at_end_of_data()
         {
             var data = new byte[] { };
-            var byteReader = IO.Reader(data);
-            var limited = IO.LimitReader(byteReader, 10);
+            var byteReader = Io.Reader(data);
+            var limited = Io.LimitReader(byteReader, 10);
             var dest = new Block<byte>(new byte[10]);
             IOResult res = limited.Read(dest);
             Assert.AreEqual(0, res.Bytes, "bytesRead");
-            Assert.AreEqual(IO.EOF, res.Error, "Error");
+            Assert.AreEqual(Io.EOF, res.Error, "Error");
         }
 
         [Test]
         public void can_read_less_than_limit()
         {
             var data = new byte[] { 1 };
-            var byteReader = IO.Reader(data);
-            var limited = IO.LimitReader(byteReader, 10);
+            var byteReader = Io.Reader(data);
+            var limited = Io.LimitReader(byteReader, 10);
             var dest = new Block<byte>(new byte[10]);
             IOResult res = limited.Read(dest);
             Assert.AreEqual(1, res.Bytes, "bytesRead");
@@ -41,8 +41,8 @@ namespace UnitTests
         public void can_read_up_to_limit()
         {
             var data = new byte[] { 1, 2, 3, 4, 5 };
-            var byteReader = IO.Reader(data);
-            var limited = IO.LimitReader(byteReader, 5);
+            var byteReader = Io.Reader(data);
+            var limited = Io.LimitReader(byteReader, 5);
             var dest = new Block<byte>(new byte[5]);
             IOResult res = limited.Read(dest);
             Assert.AreEqual(5, res.Bytes, "bytesRead");
@@ -55,14 +55,14 @@ namespace UnitTests
         public void eof_returned_after_limit_reached()
         {
             var data = new byte[] { 1,2,3,4,5 };
-            var byteReader = IO.Reader(data);
-            var limited = IO.LimitReader(byteReader, 5);
+            var byteReader = Io.Reader(data);
+            var limited = Io.LimitReader(byteReader, 5);
             var dest = new Block<byte>(new byte[5]);
             IOResult res = limited.Read(dest);
             Assert.IsNull(res.Error, "Error");
             res = limited.Read(dest);
             Assert.AreEqual(0, res.Bytes, "bytesRead");
-            Assert.AreEqual(IO.EOF, res.Error, "Error");
+            Assert.AreEqual(Io.EOF, res.Error, "Error");
         }
     }
 
@@ -73,20 +73,20 @@ namespace UnitTests
         public async Task eof_returned_at_end_of_data()
         {
             var data = new byte[] { };
-            var byteReader = IO.Reader(data);
-            var limited = IO.LimitReader(byteReader, 10);
+            var byteReader = Io.Reader(data);
+            var limited = Io.LimitReader(byteReader, 10);
             var dest = new Block<byte>(new byte[10]);
             IOResult res = await limited.ReadAsync(dest);
             Assert.AreEqual(0, res.Bytes, "bytesRead");
-            Assert.AreEqual(IO.EOF, res.Error, "Error");
+            Assert.AreEqual(Io.EOF, res.Error, "Error");
         }
 
         [Test]
         public async Task can_read_less_than_limit()
         {
             var data = new byte[] { 1 };
-            var byteReader = IO.Reader(data);
-            var limited = IO.LimitReader(byteReader, 10);
+            var byteReader = Io.Reader(data);
+            var limited = Io.LimitReader(byteReader, 10);
             var dest = new Block<byte>(new byte[10]);
             IOResult res = await limited.ReadAsync(dest);
             Assert.AreEqual(1, res.Bytes, "bytesRead");
@@ -98,8 +98,8 @@ namespace UnitTests
         public async Task can_read_up_to_limit()
         {
             var data = new byte[] { 1, 2, 3, 4, 5 };
-            var byteReader = IO.Reader(data);
-            var limited = IO.LimitReader(byteReader, 5);
+            var byteReader = Io.Reader(data);
+            var limited = Io.LimitReader(byteReader, 5);
             var dest = new Block<byte>(new byte[5]);
             IOResult res = await limited.ReadAsync(dest);
             Assert.AreEqual(5, res.Bytes, "bytesRead");
@@ -112,14 +112,14 @@ namespace UnitTests
         public async Task eof_returned_after_limit_reached()
         {
             var data = new byte[] { 1,2,3,4,5 };
-            var byteReader = IO.Reader(data);
-            var limited = IO.LimitReader(byteReader, 5);
+            var byteReader = Io.Reader(data);
+            var limited = Io.LimitReader(byteReader, 5);
             var dest = new Block<byte>(new byte[5]);
             IOResult res = await limited.ReadAsync(dest);
             Assert.IsNull(res.Error, "Error");
             res = await limited.ReadAsync(dest);
             Assert.AreEqual(0, res.Bytes, "bytesRead");
-            Assert.AreEqual(IO.EOF, res.Error, "Error");
+            Assert.AreEqual(Io.EOF, res.Error, "Error");
         }
     }
 }

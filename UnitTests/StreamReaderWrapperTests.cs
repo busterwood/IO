@@ -16,7 +16,7 @@ namespace UnitTests
         public void can_read_from_a_stream()
         {
             var input = new MemoryStream(new byte[] { 1, 2, 3, 4 });
-            IReader reader = IO.Reader(input);
+            IReader reader = Io.Reader(input);
             var buf = new byte[4];
             var res = reader.Read(buf);
             Assert.AreEqual(4, res.Bytes, "Bytes read");
@@ -31,18 +31,18 @@ namespace UnitTests
         public void read_returns_EOF_when_stream_empty()
         {
             var input = new MemoryStream(new byte[] {});
-            IReader reader = IO.Reader(input);
+            IReader reader = Io.Reader(input);
             var buf = new byte[4];
             var res = reader.Read(buf);
             Assert.AreEqual(0, res.Bytes, "Bytes read");
-            Assert.AreEqual(IO.EOF, res.Error, "Error");
+            Assert.AreEqual(Io.EOF, res.Error, "Error");
         }
 
         [Test]
         public void read_returns_EOF_after_all_data_read_from_stream()
         {
             var input = new MemoryStream(new byte[] {1, 2});
-            IReader reader = IO.Reader(input);
+            IReader reader = Io.Reader(input);
             var buf = new byte[2];
             var res = reader.Read(buf);
             Assert.AreEqual(2, res.Bytes, "Bytes read");
@@ -52,14 +52,14 @@ namespace UnitTests
 
             res = reader.Read(buf);
             Assert.AreEqual(0, res.Bytes, "Bytes read");
-            Assert.AreEqual(IO.EOF, res.Error, "Error");
+            Assert.AreEqual(Io.EOF, res.Error, "Error");
         }
 
         [Test]
         public void object_disposed_exception_is_returned_in_the_result()
         {
             var input = new MemoryStream(new byte[] {1, 2});
-            IReader reader = IO.Reader(input);
+            IReader reader = Io.Reader(input);
             input.Dispose();
             var buf = new byte[2];
             var res = reader.Read(buf);

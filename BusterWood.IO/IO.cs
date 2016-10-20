@@ -59,7 +59,7 @@ namespace BusterWood.InputOutput
         }
     }
 
-    public static class IO
+    public static class Io
     {
         public static readonly EndOfStreamException EOF = new EndOfStreamException();
 
