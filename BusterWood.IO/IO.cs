@@ -32,6 +32,32 @@ namespace BusterWood.InputOutput
         Task<IOResult> WriteAsync(Block<byte> buf);
     }
 
+    public interface IReaderAt
+    {
+        IOResult ReadAt(Block<byte> buf, long offset);
+        Task<IOResult> ReadAtAsync(Block<byte> buf, long offset);
+    }
+
+    public interface IWriterAt
+    {
+        IOResult WriteAt(Block<byte> buf, long offset);
+    }
+
+    public interface IByteReader
+    {
+        ByteResult ReadByte();
+    }
+
+    public interface IByteScanner : IByteReader
+    {
+        Exception UnreadByte();
+    }
+
+    public interface IByteWriter
+    {
+        Exception WriteByte(byte b);
+    }
+
     public interface ISeeker
     {
         IOLongResult Seek(long offset, SeekOrigin relativeTo); // there is no async equivalent in Win32
@@ -42,17 +68,17 @@ namespace BusterWood.InputOutput
         void Close();   // there is no async equivalent, but it *could* be useful for Pipe
     }
 
-    public interface IReadCloser : IReader, ICloser { }
+    public interface IReadCloser : IWriter, ICloser { }
 
     public interface IWriteCloser : IWriter, ICloser { }
 
     public interface IReadSeeker: IReader, ISeeker { }
 
-    public interface IReadSeekCloser: IReader, ISeeker, ICloser { }
+    public interface IReadSeekCloser: IReadSeeker, IReadCloser { }
 
     public interface IWriteSeeker: IWriter, ISeeker { }
 
-    public interface IWriteSeekCloser: IWriter, ISeeker, ICloser { }
+    public interface IWriteSeekCloser: IWriteSeeker, IWriteCloser { }
 
     /// <summary>The result of a <see cref="IReader.Read(Block{byte})"/> or <see cref="IWriter.Write(Block{byte})"/></summary>
     public struct IOResult
@@ -67,6 +93,17 @@ namespace BusterWood.InputOutput
         }
     }
 
+    public struct ByteResult
+    {
+        public readonly byte Value;
+        public readonly Exception Error;
+
+        public ByteResult(byte value, Exception error)
+        {
+            Value = value;
+            Error = error;
+        }
+    }
     public struct IOLongResult
     {
         public readonly long Bytes;
