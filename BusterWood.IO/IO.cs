@@ -68,7 +68,7 @@ namespace BusterWood.InputOutput
         void Close();   // there is no async equivalent, but it *could* be useful for Pipe
     }
 
-    public interface IReadCloser : IWriter, ICloser { }
+    public interface IReadCloser : IReader, ICloser { }
 
     public interface IWriteCloser : IWriter, ICloser { }
 
